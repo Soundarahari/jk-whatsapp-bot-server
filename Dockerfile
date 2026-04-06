@@ -1,8 +1,7 @@
 FROM ghcr.io/puppeteer/puppeteer:latest
 
-# Skip downloading Chrome since we use the pre-installed one
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+# Skip downloading Chrome since we use the pre-installed one from the image
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /usr/src/app
 
