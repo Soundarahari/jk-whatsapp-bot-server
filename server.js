@@ -12,6 +12,7 @@ const client = new Client({
     authStrategy: new LocalAuth(), // Saves your login session so you don't scan the QR code every time
     puppeteer: {
         headless: true,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
