@@ -24,8 +24,8 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
             '--disable-gpu'
+            // NOTE: --single-process removed — it causes Chrome to crash and disconnect
         ]
     }
 });
@@ -96,6 +96,12 @@ app.get('/qr', (req, res) => {
 
 // Send WhatsApp message endpoint
 app.post('/send-whatsapp', async (req, res) => {
+    // Guard: don't attempt to send if the client isn't fully ready yet
+    if (!isReady) {
+        console.warn('WhatsApp client not ready. Message not sent.');
+        return res.status(503).json({ success: false, error: 'WhatsApp client not ready. Please scan the QR code at /qr first.' });
+    }
+
     try {
         const { phoneNumber, orderId, totalAmount } = req.body;
         
@@ -105,6 +111,7 @@ app.post('/send-whatsapp', async (req, res) => {
         const message = `*Order Confirmed!* 🍔\n\nYour order #${orderId} for ₹${totalAmount} has been received by JK Restaurant and is being prepared. We will update you shortly!`;
 
         await client.sendMessage(formattedNumber, message);
+        console.log(`✅ WhatsApp message sent to ${phoneNumber} for order ${orderId}`);
         res.status(200).json({ success: true, message: 'WhatsApp sent!' });
 
     } catch (error) {
